@@ -149,9 +149,6 @@ function draw(){
 
 }
 
-function draw_edge(){
-}
-
 function startup(){
 	canvas = document.getElementById("myGLCanvas");
 	gl = createGLContext(canvas);
