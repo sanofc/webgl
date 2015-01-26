@@ -100,29 +100,44 @@ function setupBuffers(){
 	elementBuffer.numberOfItems = 11;
 }
 
-function draw() {
+function draw_background() {
 	gl.viewport(0,0,gl.viewportWidth,gl.viewportHeight);
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT);	
+}
+
+function draw_triangle(){
 	gl.disableVertexAttribArray(shaderProgram.vertexColorAttribute);
 	gl.bindBuffer(gl.ARRAY_BUFFER,vertexBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,vertexBuffer.itemSize,gl.FLOAT,false,0,0);
 	gl.vertexAttrib4f(shaderProgram.vertexColorAttribute,1.0,1.0,0.0,1.0);
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,elementBuffer);
 	gl.drawElements(gl.TRIANGLE_STRIP,elementBuffer.numberOfItems,gl.UNSIGNED_SHORT,0);
+}
+
+function draw_edge(){
 	gl.vertexAttrib4f(shaderProgram.vertexColorAttribute,0.0,0.0,0.0,1.0);
 	gl.drawArrays(gl.LINE_STRIP,0,vertexBuffer.numberOfItems);
-	
+
 }
 
 function startup(){
 	canvas = document.getElementById("myGLCanvas");
 	gl = createGLContext(canvas);
-	/*if(window.WebGLDebugUtils){
-			gl = WebGLDebugUtils.makeDebugContext(gl);
-	}*/
 	setupShaders();
 	setupBuffers();
-	gl.clearColor(1.0,1.0,1.0,1.0);
-	draw();
+	gl.clearColor(0.7,0.7,0.7,1.0);
+	draw_background();
+	draw_triangle();
+	draw_edge();
 }
 
+function test(){
+	if(document.check_form.draw_edge.checked){
+		draw_background();
+		draw_triangle();
+		draw_edge();
+	}else{
+		draw_background();
+		draw_triangle();
+	}
+}
