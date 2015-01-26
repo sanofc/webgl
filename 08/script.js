@@ -5,7 +5,6 @@ var squareVertexBuffer;
 var squareElementBuffer;
 var circleVertexBuffer;
 var circleVertexBuffer;
-var draw_edge;
 
 function createGLContext(canvas){
 	var context = null;
