@@ -2,6 +2,10 @@ var gl;
 var canvas;
 var shaderProgram;
 var vertexBuffer;
+var vertexColorBuffer;
+
+var modelViewMatrix;
+var projectionMatrix;
 
 function createGLContext(canvas){
 	var context = null;
@@ -64,37 +68,64 @@ function setupShaders(){
 	}
 	gl.useProgram(shaderProgram);
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram,"aVertexPosition");
+	shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram,"aVertexColor");
+	shaderProgram.uniformMVMatrix = gl.getUniformLocation(shaderProgram,"uMVMatrix");
+	shaderProgram.uniformProjMatrix = gl.getUniformLocation(shaderProgram,"uPMatrix");
 
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+	modelViewMatrix = mat4.create();
+	projectionMatrix = mat4.create();
+	
 }
 
 function setupBuffers(){
 	vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 	var vertices = [
-		0.0, 0.5 , 0.0,
+		 0.0, 0.5, 0.0,
 		-0.5,-0.5, 0.0,
-		0.5,-0.5, 0.0,
+		 0.5,-0.5, 0.0,
 			];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices),gl.STATIC_DRAW);
 	vertexBuffer.itemSize = 3;
 	vertexBuffer.numberOfItems = 3;
+
+	vertexColorBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER,vertexColorBuffer);
+	var colors = [
+		1.0,0.0,0.0,1.0,
+		0.0,1.0,0.0,1.0,
+		0.0,0.0,1.0,1.0
+	];
+	gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(colors),gl.STATIC_DRAW);
+	vertexColorBuffer.itemSize=4;
+	vertexColorBuffer.numberOfItems=3;
+	
 }
 
 function draw() {
 	gl.viewport(0,0,gl.viewportWidth,gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	gl.clearDepth(1.0);
+	mat4.perspective(projectionMatrix, Math.PI * (60/180), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+	mat4.identity(modelViewMatrix);
+	mat4.lookAt(modelViewMatrix,[8, 5, -10],[0, 0, 0],[0, 1, 0]);
+	console.log(projectionMatrix);
+	console.log(modelViewMatrix);
+	gl.uniformMatrix4fv(shaderProgram.uniformProjMatrix, false, projectionMatrix);
+	gl.uniformMatrix4fv(shaderProgram.uniformMVMatrix, false, modelViewMatrix);
+	gl.bindBuffer(gl.ARRAY_BUFFER,vertexBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	gl.bindBuffer(gl.ARRAY_BUFFER,vertexColorBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,vertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.TRIANGLES,0,vertexBuffer.numberOfItems);
+
 }
 
 function startup(){
 	canvas = document.getElementById("myGLCanvas");
 	gl = createGLContext(canvas);
-	if(window.WebGLDebugUtils){
-		gl = WebGLDebugUtils.makeDebugContext(gl);
-	}
 	setupShaders();
 	setupBuffers();
 	gl.clearColor(0.0,0.0,0.0,1.0);
