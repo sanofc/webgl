@@ -152,7 +152,7 @@ function draw() {
 	gl.vertexAttrib4f(shaderProgram.vertexColorAttribute, 1.0, 1.0, 1.0, 1.0);
 	gl.bindBuffer(gl.ARRAY_BUFFER,vertexPositionBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.drawElements(gl.TRIANGLE, vertexIndexBuffer.numberOfItems,gl.UNSIGNED_SHORT,0);
+	gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numberOfItems,gl.UNSIGNED_SHORT,0);
 
 }
 
